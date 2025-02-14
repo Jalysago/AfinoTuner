@@ -1,3 +1,4 @@
 <resources>
-    <string name="app_name">TunerApp</string>
+    <string name="app_name">Afino</string>
+    <string name="hertz">Detected Pitch: %1$.1f</string>
 </resources>

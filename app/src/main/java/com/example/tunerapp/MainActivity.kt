@@ -1,48 +1,40 @@
 package com.example.tunerapp
 
 import android.os.Bundle
+import android.widget.TextView
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.activity.enableEdgeToEdge
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
-import com.example.tunerapp.ui.theme.TunerAppTheme
+import com.example.tunerapp.tuner.AudioProcessor
+import com.example.tunerapp.tuner.PitchListener
 
+class MainActivity : ComponentActivity(), PitchListener {
 
-class MainActivity : ComponentActivity() {
+    private lateinit var pitchDisplayTextView:TextView
+    private lateinit var audioProcessor: AudioProcessor
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
-        setContent {
-            TunerAppTheme {
-                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    Greeting(
-                        name = "Android",
-                        modifier = Modifier.padding(innerPadding)
-                    )
-                }
-            }
+        setContentView(R.layout.activity_main)
+
+
+        pitchDisplayTextView = findViewById(R.id.activity_main_pitch_textView)
+        audioProcessor = AudioProcessor(this)
+    }
+
+    override fun onResume() {
+        super.onResume()
+        audioProcessor.processAudio()
+    }
+
+    override fun onPause() {
+        audioProcessor.stopProcessing()
+        super.onPause()
+    }
+
+    override fun onPitchDetected(pitch: Float) {
+        runOnUiThread{
+            pitchDisplayTextView.text = getString(R.string.hertz, pitch)
         }
     }
 }
 
-@Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
-    Text(
-        text = "Hello $name!",
-        modifier = modifier
-    )
-}
-
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreview() {
-    TunerAppTheme {
-        Greeting("Android")
-    }
-}
