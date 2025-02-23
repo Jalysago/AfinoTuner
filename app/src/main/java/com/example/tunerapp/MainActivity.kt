@@ -5,6 +5,7 @@ import android.widget.TextView
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import com.example.tunerapp.tuner.AudioProcessor
+import com.example.tunerapp.tuner.Note
 import com.example.tunerapp.tuner.PitchListener
 
 class MainActivity : ComponentActivity(), PitchListener {
@@ -31,10 +32,13 @@ class MainActivity : ComponentActivity(), PitchListener {
         super.onPause()
     }
 
-    override fun onPitchDetected(pitch: Float) {
+    override fun onPitchDetected(pitch: Note) {
         runOnUiThread{
-            pitchDisplayTextView.text = getString(R.string.hertz, pitch)
+            pitchDisplayTextView.text = getString(
+                R.string.detected_pitch,
+                pitch.note.noteDisplayed,
+                pitch.octave,
+                pitch.centsOff)
         }
     }
 }
-

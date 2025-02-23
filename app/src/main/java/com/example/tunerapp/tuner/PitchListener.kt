@@ -1,5 +1,5 @@
 package com.example.tunerapp.tuner
 
 interface PitchListener {
-    fun onPitchDetected(pitch: Float)
+    fun onPitchDetected(pitch: Note)
 }

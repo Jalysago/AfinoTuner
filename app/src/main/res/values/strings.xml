@@ -1,4 +1,4 @@
 <resources>
     <string name="app_name">Afino</string>
-    <string name="hertz">Detected Pitch: %1$.1f</string>
+    <string name="detected_pitch">Detected Pitch: %1$s%2$d (%3$.1f cents off)</string>
 </resources>
