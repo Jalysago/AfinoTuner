@@ -1,4 +1,5 @@
 <resources>
     <string name="app_name">Afino</string>
     <string name="detected_pitch">Detected Pitch: %1$s%2$d (%3$.1f cents off)</string>
+    <string name="permission_not_granted">You must grant microphone permissions</string>
 </resources>
