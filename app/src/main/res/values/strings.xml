@@ -1,5 +1,13 @@
 <resources>
     <string name="app_name">Afino</string>
     <string name="detected_pitch">Detected Pitch: %1$s%2$d (%3$.1f cents off)</string>
-    <string name="permission_not_granted">You must grant microphone permissions</string>
+    <string name="detected_note">%1$s%2$d</string>
+    <string name="cents_off">%1$.1f cents</string>
+    <string name="permission_not_granted">Microphone access needed</string>
+    <string name="permission_required_title">Microphone Required</string>
+    <string name="permission_rationale">This app needs microphone access to detect musical notes. Please grant this permission in Settings.</string>
+    <string name="go_to_settings">Settings</string>
+    <string name="cancel">Cancel</string>
+    <string name="settings_title">Tuner Settings</string>
+    <string name="settings">Settings</string>
 </resources>

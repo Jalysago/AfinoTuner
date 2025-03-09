@@ -19,4 +19,4 @@ enum class ChromaticScale (val noteDisplayed: String,) {
             return entries.first(){it.ordinal == (midiNumber % 12)}
         }
     }
-}// todo: crear una funcion para que cambie el note displayed por el valor enharmonico.
+}
