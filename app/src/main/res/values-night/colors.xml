@@ -3,7 +3,7 @@
     <color name="windowBackground">#121212</color>   <!-- Dark grey background -->
     <color name="textColorPrimary">#FFFFFF</color>     <!-- White text -->
 
-    <color name="tuner_line_inactive">#444444</color>  <!-- Darker gray for night mode -->
+    <color name="tuner_line_inactive_night_mode">#444444</color>  <!-- Darker gray for night mode -->
     <color name="tuner_line_perfect">#4CAF50</color>   <!-- Green for perfect pitch -->
     <color name="tuner_line_slight_off">#FF9800</color>  <!-- Orange for slightly off pitch -->
     <color name="tuner_line_very_off">#F44336</color>  <!-- Red for very off pitch -->
