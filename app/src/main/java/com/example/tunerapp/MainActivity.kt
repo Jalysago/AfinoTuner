@@ -4,16 +4,25 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.provider.Settings
+import android.view.Menu
+import android.view.MenuItem
 import android.view.View
+import android.widget.ArrayAdapter
+import android.widget.EditText
 import android.widget.ImageView
+import android.widget.Spinner
 import android.widget.TextView
+import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.Toolbar
 import com.example.tunerapp.tuner.AudioProcessor
 import com.example.tunerapp.tuner.Note
 import com.example.tunerapp.tuner.PermissionManager
 import com.example.tunerapp.tuner.PermissionResultCallback
+import com.example.tunerapp.tuner.PitchDetectionAlgorithm
 import com.example.tunerapp.tuner.PitchListener
+import com.example.tunerapp.utilities.SettingsManager
 import com.example.tunerapp.utilities.TunerLineManager
 import kotlinx.coroutines.Job
 
@@ -22,9 +31,11 @@ class MainActivity : AppCompatActivity(), PitchListener, PermissionResultCallbac
 
     private lateinit var noteTextView: TextView
     private lateinit var centerOffTextView: TextView
+    private lateinit var tuningStandardTextView: TextView
     private lateinit var audioProcessor: AudioProcessor
     private lateinit var permissionManager: PermissionManager
     private lateinit var tunerLineManager: TunerLineManager
+    private lateinit var settingsManager: SettingsManager
 
     private var updateJob: Job? = null
 
@@ -32,17 +43,22 @@ class MainActivity : AppCompatActivity(), PitchListener, PermissionResultCallbac
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
+        val toolbar = findViewById<Toolbar>(R.id.toolbar)
+        setSupportActionBar(toolbar)
 
         noteTextView = findViewById(R.id.activity_main_note_textView)
         centerOffTextView = findViewById(R.id.cents_off_textView)
+        tuningStandardTextView = findViewById(R.id.tuning_standard_textView)
 
-
+        settingsManager = SettingsManager(this)
         audioProcessor = AudioProcessor(this)
         permissionManager = PermissionManager(this)
         permissionManager.register(this)
         tunerLineManager = TunerLineManager(this)
 
         setupTunerLines()
+        updateTuningStandardDisplay()
+        updateAudioProcessorSettings()
     }
 
     private fun setupTunerLines() {
@@ -63,6 +79,88 @@ class MainActivity : AppCompatActivity(), PitchListener, PermissionResultCallbac
             val lineView = findViewById<ImageView>(id)
             tunerLineManager.addLine(cents, lineView)
         }
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        menuInflater.inflate(R.menu.menu_main, menu)
+        return true
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when (item.itemId) {
+            R.id.action_settings -> {
+                showSettingsDialog()
+                true
+            } else -> super.onOptionsItemSelected(item)
+        }
+    }
+
+    private fun showSettingsDialog() {
+        val dialogView = layoutInflater.inflate(R.layout.dialog_settings, null)
+        val frequencyEditText = dialogView.findViewById<EditText>(R.id.tuning_frequency_editText)
+        val algorithmSpinner = dialogView.findViewById<Spinner>(R.id.spinner_algorithm)
+
+        frequencyEditText.setText(settingsManager.getTuningFrequency().toString())
+
+        //this sets the spinner with all the algorithms available
+        val algorithms = PitchDetectionAlgorithm.entries.map {it.displayName}.toTypedArray()
+        val adapter = ArrayAdapter(this, android.R.layout.simple_spinner_item, algorithms)
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+        algorithmSpinner.adapter = adapter
+        algorithmSpinner.setSelection(settingsManager.getAlgorithmOrdinal())
+
+        AlertDialog.Builder(this)
+            .setTitle(R.string.settings_title)
+            .setView(dialogView)
+            .setPositiveButton(R.string.save) {_, _->
+                try {
+                    val frequency = frequencyEditText.text.toString().toFloat()
+                    val minFreq = settingsManager.getMinTuningFrequency()
+                    val maxFreq = settingsManager.getMaxTuningFrequency()
+
+                    if (frequency < minFreq || frequency > maxFreq) {
+                        Toast.makeText(
+                            this,
+                            getString(R.string.invalid_frequency, minFreq, maxFreq),
+                            Toast.LENGTH_SHORT
+                        ).show()
+                        return@setPositiveButton
+                    }
+                    settingsManager.setTuningFrequency(frequency)
+
+                    val selectedAlgorithm = PitchDetectionAlgorithm.entries[algorithmSpinner.selectedItemPosition]
+                    settingsManager.setAlgorithm(selectedAlgorithm)
+
+                    updateTuningStandardDisplay()
+                    updateAudioProcessorSettings()
+
+                    Toast.makeText(this, R.string.settings_saved, Toast.LENGTH_SHORT).show()
+                } catch (e: Exception) {
+                    Toast.makeText(
+                        this,
+                        getString(R.string.invalid_frequency,
+                            settingsManager.getMinTuningFrequency(),
+                            settingsManager.getMaxTuningFrequency()),
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
+            }
+            .setNegativeButton(R.string.cancel, null)
+            .show()
+    }
+
+    private fun updateTuningStandardDisplay() {
+        tuningStandardTextView.text = getString(
+            R.string.current_tuning_standard,
+            settingsManager.getTuningFrequency()
+        )
+    }
+
+    private fun updateAudioProcessorSettings() {
+        audioProcessor.updateSettings(
+            settingsManager.getTuningFrequency(),
+            settingsManager.getAlgorithm()
+        )
     }
 
     override fun onResume() {

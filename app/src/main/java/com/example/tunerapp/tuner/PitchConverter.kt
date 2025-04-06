@@ -13,4 +13,8 @@ class PitchConverter(private var referenceFreq: Float = 440f) {
         val octave = (nearestMidi / 12) - 1
         return Note(chromaticScale, octave, centsOff)
     }
+
+//    fun updateReferenceFrequency(frequency: Float) {
+//        referenceFreq = frequency
+//    }
 }

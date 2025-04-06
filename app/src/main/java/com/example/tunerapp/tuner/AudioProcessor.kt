@@ -12,7 +12,6 @@ import kotlinx.coroutines.launch
 
 class AudioProcessor (
     private val pitchListener: PitchListener,
-    private val pitchConverter: PitchConverter = PitchConverter(),
     private val coroutineScope: CoroutineScope = CoroutineScope(Dispatchers.Default)
     ) {
     private val sampleRate = 44100
@@ -20,6 +19,21 @@ class AudioProcessor (
     private val overlap = 3072
     private var dispatcher: AudioDispatcher? = null
     private var isProcessing = false
+
+    private var currentAlgorithm: PitchDetectionAlgorithm = PitchDetectionAlgorithm.getDefault()
+    private var pitchConverter = PitchConverter()
+
+    fun updateSettings(tuningFrequency: Float, algorithm: PitchDetectionAlgorithm) {
+        pitchConverter = PitchConverter(tuningFrequency)
+
+        if (currentAlgorithm != algorithm && isProcessing) {
+            currentAlgorithm = algorithm
+            stopProcessing()
+            processAudio()
+        } else {
+            currentAlgorithm = algorithm
+        }
+    }
 
     fun processAudio() {
         if (isProcessing) return
@@ -42,7 +56,7 @@ class AudioProcessor (
                     }
                 }
                 val pitchProcessor = PitchProcessor(
-                    PitchProcessor.PitchEstimationAlgorithm.MPM,
+                    currentAlgorithm.algorithm,
                     sampleRate.toFloat(),
                     bufferSize,
                     pitchHandler
