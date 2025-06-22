@@ -11,7 +11,7 @@ A professional grade minimalist Android chromatic tuner app with real time pitch
 ## Main Features
 
 - Chromatic tuning detection
-- 100% off-line
+- 100% offline
 - Visual tuning indicator
 - Cents off display
 - Customizable reference pitch (A = 400-500Hz)
