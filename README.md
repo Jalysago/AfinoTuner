@@ -1,8 +1,11 @@
 # Afino Tuner App
 A professional grade minimalist Android chromatic tuner app with real time pitch detection, customizable tuning standards, light and dark mode, and multiple pitch detection algorithms.
+
 ![image](https://github.com/user-attachments/assets/4052aaee-e68b-4774-bbd2-8bc8ce93282a)
 
+
 ![image](https://github.com/user-attachments/assets/c35b5090-70b5-49f8-832d-b6132aa73db3)
+
 
 
 ## Main Features
